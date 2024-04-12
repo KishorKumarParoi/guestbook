@@ -1,6 +1,33 @@
+import { signOut } from 'firebase/auth';
+import { useAuthState } from "react-firebase-hooks/auth";
+import { useNavigate } from "react-router-dom";
+import { auth } from "../firebase";
 
-export default function Home() {
+const Home = () => {
+    const navigate = useNavigate();
+    const [user, loading, error] = useAuthState(auth);
+
+    console.log('user', user);
+
+    const handleLogout = () => {
+        signOut(auth).then(() => {
+            navigate("/login");
+            console.log('Signed Out');
+        }).catch((error) => {
+            console.error(error);
+        });
+    }
+
+    if (loading) return <p> User info loading....</p>
+
     return (
-        <div>Home</div>
+        <>
+            <div>Welcome, {user.email}</div>
+            <button
+                className='bg-black text-white tounded p-1'
+                onClick={handleLogout}>Logout</button>
+        </>
     )
 }
+
+export default Home;

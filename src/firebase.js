@@ -1,5 +1,7 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
+import { createUserWithEmailAndPassword, getAuth, sendPasswordResetEmail, signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
+import { FacebookAuthProvider, GoogleAuthProvider } from "firebase/auth/cordova";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -15,5 +17,62 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const googleAuthProvider = new GoogleAuthProvider();
+const facebookAuthProvider = new FacebookAuthProvider();
 
-export default app;
+const registerWithEmailAndPassword = async (email, password) => {
+    try {
+        const res = await createUserWithEmailAndPassword(auth, email, password);
+        const user = res.user;
+        return user;
+    } catch (err) {
+        throw new Error(err.message);
+    }
+};
+
+const loginWithEmailAndPassword = async (email, password) => {
+    try {
+        const response = await signInWithEmailAndPassword(
+            auth,
+            email,
+            password
+        );
+        return response;
+    } catch (err) {
+        throw new Error(err.message);
+    }
+}
+
+
+const sendPasswordReset = async (email) => {
+    try {
+        await sendPasswordResetEmail(auth, email);
+    } catch (error) {
+        throw new Error(error.message);
+    }
+}
+
+const signInWithGoogle = async () => {
+    try {
+        const response = await signInWithPopup(auth, googleAuthProvider);
+        const user = response.user;
+        return user;
+    } catch (error) {
+        throw new Error(error.message);
+    }
+}
+
+const signInWithFacebook = async () => {
+    try {
+        const response = await signInWithPopup(auth, facebookAuthProvider);
+        const user = response.user;
+        return user;
+    } catch (error) {
+        throw new Error(error.message);
+    }
+}
+
+
+export { auth, loginWithEmailAndPassword, registerWithEmailAndPassword, sendPasswordReset, signInWithFacebook, signInWithGoogle };
+
